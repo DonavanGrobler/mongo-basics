@@ -1,7 +1,7 @@
 const MongoClient = require("mongodb").MongoClient;
 
 const url =
-  "mongodb+srv://donavangrobler:42069@mern-stack-project.ad4vguk.mongodb.net/?retryWrites=true&w=majority&appName=MERN-Stack-Project";
+  "mongodb+srv://donavangrobler:42069@mern-stack-project.ad4vguk.mongodb.net/producst_test?retryWrites=true&w=majority&appName=MERN-Stack-Project";
 
 const createProduct = async (req, res, next) => {
   const newProduct = {
@@ -22,7 +22,22 @@ const createProduct = async (req, res, next) => {
   res.json(newProduct);
 };
 
-const getProducts = async (req, res, next) => {};
+const getProducts = async (req, res, next) => {
+  const client = new MongoClient(url);
+
+  let products;
+
+  try {
+    await client.connect();
+    const db = client.db();
+    products = await db.collection("products").find().toArray();
+  } catch (error) {
+    return res.json({ message: "Could not retrieve products." });
+  }
+  client.close();
+
+  res.json(products);
+};
 
 exports.createProduct = createProduct;
 exports.getProducts = getProducts;
